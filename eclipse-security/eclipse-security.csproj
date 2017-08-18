@@ -74,6 +74,18 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="admin.css" />
+    <Content Include="auth.js" />
+    <Content Include="encite-core-library.js" />
+    <Content Include="index.html" />
+    <Content Include="js.cookie.js" />
+    <Content Include="maps.html" />
+    <Content Include="menu.html" />
+    <Content Include="pagemaps.html" />
+    <Content Include="pages.html" />
+    <Content Include="pagesecurity.html" />
+    <Content Include="roles.html" />
+    <Content Include="routes.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,294 @@
+<HTML>
+<head>
+    <title>Encite Security - Page Permissions</title>
+    <!-- Latest compiled and minified CSS -->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="js.cookie.js"></script>
+    <script src="auth.js"></script>
+    <script src="encite-core-library.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito|EB+Garamond" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="admin.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-primary">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="#">Eclipse</a>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="roles.html">Roles</a></li>
+                <li class="nav-item"><a class="nav-link" href="routes.html">Routes</a></li>
+                <li class="nav-item"><a class="nav-link" href="maps.html">Maps</a></li>
+                <li class="nav-item"><a class="nav-link" href="menu.html">Menu Items</a></li>
+                <li class="nav-item active"><a class="nav-link" href="pagesecurity.html">Pages <span class="sr-only">(current)</span></a></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+    <div class="bg-header">
+        <div class="container">
+            <br>
+            <h1>Manage Page Permissions</h1>
+            <p>Manage security routes, routes, maps and pages.</p>
+            <p><button type="button" id="btnNew" class="btn btn-primary btn-sm">Create a new element</button></p>
+        </div>
+    </div>
+    <div class="container">
+        <div class="messages">
+            <div id="msgSuccess" class="text-center alert alert-success collapse">The database has been successfully updated.</div>
+            <div id="msgError" class="text-center alert alert-danger collapse">Error updating database.</div>
+        </div>
+        <table id="maintable" class="table table-striped">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>ID</th>
+                    <th>Route ID</th>
+                    <th>Element Definition</th>
+                    <th>Element Class</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tfoot class="bg-primary text-white">
+                <tr>
+                    <th>ID</th>
+                    <th>Route ID</th>
+                    <th>Element Definition</th>
+                    <th>Element Class</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="modal fade" id="modalRoles">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title modalInput">Manage Element</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container">
+                    <div class="input-group">
+                        <label for="Definition" style="width:100px;">Element ID</label>
+                        <input type="text" name="Definition" id="txtElementDefinition" class="form-control" placeholder="Element Definition">
+                    </div>
+                    <div class="input-group">
+                        <label for="Class" style="width:100px;">Class Modifiers</label>
+                        <input type="text" name="Class" id="txtElementClass" class="form-control" placeholder="Element Class">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-secondary" id="btnUpdateName" type="button">Update</button>
+                        </span>
+                    </div>
+                    <div id="elementID" style="display:none"></div>
+                    <div id="roleList">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSuccess" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Success!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="pSuccess">The database has been successfully updated.</p>
+                    <p id="pFail">Something went wrong. Try again or contact an administrator.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="modalLoad" id="modalLoad" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h5 class="modal-title">Loading...</h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 100%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $.ajaxSetup({
+                headers: { 'Shepherd': '10000' }
+            });
+
+            checkAuthentication();
+
+            var routeID = Cookies.get("RouteID");
+
+            if (!routeID || routeID === 'undefined') {
+
+                document.location.href = 'routes.html';
+            }
+
+            var pageSecurityRequest = baseSecurityUrl + "/PageSecurity/SecurityRouteID/" + routeID + "/0/0";
+
+            var table = $('#maintable'); // use a global for the submit and return data rendering in the examples
+
+            table.DataTable({
+                dom: "Bfrtip",
+                processing: true,
+                ajax: {
+                    "url": pageSecurityRequest,
+                    dataSrc: "ResponseObject",
+                    "cache": true
+                },
+                columns: [
+                    { data: "ID" },
+                    { data: "SecurityRouteID" },
+                    { data: "ElementDefinition" },
+                    { data: "ElementClass" },
+                    {
+                        data: null, render: function (data, type, row) {
+                            return '<button data-id="' + row.ID + '" class="btn btn-primary btnModal" >Edit</button>';
+                        }
+                    }
+                ]
+            });
+
+            $("#btnNew").on("click", function () {
+                $('#elementID').text('0');
+                $("#txtElementDefinition").val('');
+                $("#txtElementClass").val('');
+                $('#roleList').empty();
+                $("#modalRoles").modal('show');
+
+            });
+
+            $("#btnUpdateName").on("click", function () {
+
+                var id = $('#elementID').text();
+                var loggedInUser = 0;
+
+                if (!$.isNumeric(id)) {
+                    id = 0;
+                }
+                else {
+                    id = parseInt(id);
+                }
+
+                var requestObject = {
+                    ID: id,
+                    ElementDefinition: $("#txtElementDefinition").val(),
+                    ElementClass: $("#txtElementClass").val(),
+                    LoggedInUserID: loggedInUser,
+                    Enabled: true,
+                    SecurityRouteID: routeID
+                };
+
+                $.ajax({
+                    url: baseSecurityUrl + "/PageSecurity",
+                    type: "POST",
+                    dataType: "json", // expected format for response
+                    contentType: "application/json", // send as JSON
+                    data: JSON.stringify(requestObject),
+                }).always(function () {
+                    $("#modalRoles").modal('hide');
+                }).done(function (data) {
+
+                    table.DataTable().ajax.reload();
+
+                    $("#msgSuccess").show();
+                }).fail(function (data) {
+                    $("#msgError").show();
+                });
+            });
+
+            $("body").on("click", ".btnModal", function (e) {
+
+                var elementID = $(this).data('id');
+                $('#elementID').text(elementID);
+
+                $('#roleList').empty();
+
+                $.get(baseSecurityUrl + "/SecurityRole/0/0", function (data) {
+
+                    $.each(data.ResponseObject, function (index, value) {
+                        $('#roleList').append('<button id="btn' + value.ID + '" data-id="0" data-roleid="' + value.ID + '" class="float-left col-5 mr-2 mb-2 btn btn-danger btnRole">' + value.Name + '</button>');
+                    });
+                }).done(function () {
+
+                    var request = baseSecurityUrl + '/PageSecurityRoleMembership/PageSecurityElementID/' + elementID + '/0/0';
+
+                    $.get(request, function (data) {
+                        $.each(data.ResponseObject, function (index, value) {
+                            $('#btn' + value.SecurityRoleID).removeClass('btn-danger');
+                            $('#btn' + value.SecurityRoleID).addClass('btn-success');
+                            $('#btn' + value.SecurityRoleID).data('id', value.ID);
+                        });
+
+                    }).done(function () {
+                        $.get(baseSecurityUrl + "/PageSecurity/" + elementID, function (data) {
+                            $("#txtElementDefinition").val(data.ResponseObject.ElementDefinition);
+                            $("#txtElementClass").val(data.ResponseObject.ElementClass);
+                        });
+                    }).done(function () {
+                        $("#modalRoles").modal('show');
+                    });
+                });
+
+            });
+
+            $("body").on("click", ".btnRole", function () {
+
+                var currentButton = this;
+                var roleID = $(currentButton).data('roleid');
+                var membershipID = $(currentButton).data('id');
+
+                var elementID = $('#elementID').text();
+                var request = baseSecurityUrl + '/PageSecurityRoleMembership/PageSecurityElementID/' + elementID + '/0/0';
+
+                if (membershipID != 0) {
+                    $.ajax({
+                        url: baseSecurityUrl + '/PageSecurityRoleMembership/' + membershipID,
+                        type: "DELETE",
+                        dataType: "json", // expected format for response
+                    }).done(function () {
+                        $(currentButton).removeClass('btn-success');
+                        $(currentButton).addClass('btn-danger');
+                    });
+                } else {
+                    $.ajax({
+                        url: baseSecurityUrl + '/PageSecurityRoleMembership',
+                        type: "POST",
+                        dataType: "json", // expected format for response
+                        contentType: "application/json", // send as JSON
+                        data: JSON.stringify({ ID: 0, SecurityRoleID: roleID, PageSecurityElementID: elementID, Enabled: true, UserID: 0 })
+                    }).done(function () {
+                        $(currentButton).removeClass('btn-danger');
+                        $(currentButton).addClass('btn-success');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</HTML>

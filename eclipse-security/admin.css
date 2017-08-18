@@ -1,0 +1,20 @@
+body {
+    font-family: 'Nunito', sans-serif;
+}
+h1,h2{
+    font-family: 'EB Garamond', serif;
+}
+
+input,select,button {
+    font-family: 'Nunito', sans-serif;
+}
+
+.bg-primary {
+    background-color: #013865!important;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #013865;
+    border-color: #013865;
+}

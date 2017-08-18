@@ -1,0 +1,92 @@
+<HTML>
+<head>
+    <title>Encite Security - Home</title>
+    <!-- Latest compiled and minified CSS -->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="js.cookie.js"></script>
+    <script src="auth.js"></script>
+    <script src="encite-core-library.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Nunito|EB+Garamond" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            background-color: #013865;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        h1 {
+            font-family: 'EB Garamond', serif;
+        }
+
+        input {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        button {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        #maincard {
+            max-width: 30rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="maincard" class="card-block card-inverse">
+        <h1 class="text-center">Encite Security Portal</h1>
+        <p class="text-center">Manage security roles, routes, maps and pages.</p>
+        <div class="row">
+            <div class="col-sm-8 offset-sm-2">
+                <form>
+                    <div class="form-group">
+                        <label for="txtUser" class="form-label">Username</label>
+                        <input type="text" id="txtUser" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtPassword" class="form-label">Password</label>
+                        <input type="password" id="txtPassword" class="form-control">
+                    </div>
+                    <div class="form-group text-center">
+                        <button id="btnAuth" type="button" class="btn btn-sm mt-2 btn-default">Enter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+
+        $("#btnAuth").click(function () {
+
+            var username = $("#txtUser").val();
+            var password = $("#txtPassword").val();
+
+            $.ajax({
+                url: baseSecurityUrl + "/Authentication/Authenticate",
+                type: "POST",
+                dataType: "json", // expected format for response
+                contentType: "application/json", // send as JSON
+                data: JSON.stringify({ Username: username, Password: password }),
+            }).done(function (data) {
+                processResult(data);
+            });
+        })
+
+        $(document).ready(function () {
+            $.ajaxSetup({
+                headers: { 'Shepherd': '10000' }
+            });
+
+        });
+    </script>
+</body>
+</HTML>
