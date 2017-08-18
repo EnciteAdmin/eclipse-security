@@ -1,20 +1,23 @@
 ﻿$.ajaxPrefilter(function (options) {
-  if (!options.beforeSend) {
-    options.beforeSend = function (xhr) {
-        xhr.setRequestHeader('Shepherd', Cookies.get('tokenid'));
+    if (!options.beforeSend) {
+        options.beforeSend = function (xhr) {
+            xhr.setRequestHeader('Shepherd', Cookies.get('EnciteAPI'));
+        }
     }
-  }
 });
 
+//$.ajaxSetup({
+//    headers: { 'Shepherd': '10000' }
+//});
 /* Global variables */
 thisUrl = window.location.protocol + "//" + window.location.host;
 
-//baseUrl = 'http://eclipseapi.virvent.com';
-//baseSecurityUrl = 'http://eclipsesecureapi.virvent.com';
+baseUrl = 'http://eclipseapi.virvent.com';
+baseSecurityUrl = 'http://eclipsesecureapi.virvent.com';
 
 // For local testing only - uncomment these lines
-baseUrl = 'http://localhost:51173';
-baseSecurityUrl = 'http://localhost:64498';
+//baseUrl = 'http://localhost:51173';
+//baseSecurityUrl = 'http://localhost:64498';
 
 baseDebugStatus = true;
 
@@ -73,7 +76,7 @@ var encite = {
                     //lclHtml = lclHtml.replace(new RegExp("{" + prop + "}", 'g'), '');
                 }
             }
-        }       
+        }
     },
 
     //funcion get(req: Request, opt ?: Options) {
@@ -92,7 +95,7 @@ var encite = {
                 url: url,
                 data: body,
                 beforeSend: xhr => {
-                    xhr.setRequestHeader('Shepherd', Cookies.get('tokenid'));
+                    xhr.setRequestHeader('Shepherd', Cookies.get('EnciteAPI'));
                 },
                 contentType: "application/json"
             })
@@ -197,7 +200,123 @@ var encite = {
             }
         }
         return lclHtml;
+    },
+
+    //shorthand ajax methods
+    Post: function (controller, data) {
+
+        var returnValue = $.Deferred();
+
+        return encite.doAjax({
+            base: baseSecurityUrl,
+            uri: controller,
+            method: "POST"
+        }, options, JSON.stringify(data)).then(result => {
+            if (result.Code == 201 || result.Code == 200) {
+                return returnValue.resolve(result.ResponseObject).promise();
+            }
+            else {
+                return returnValue.reject(result.Code).promise();
+            }
+        });
+
+    },
+
+    GetList: function (controller, firstRecord, amount) {
+
+        var returnValue = $.Deferred();
+
+        if (!amount && amount != 0) {
+
+            amount = 100;
+
+            if (!firstRecord && firstRecord != 0) {
+
+                firstRecord = 1;
+            }
+        }
+
+        return encite.doAjax({
+            base: baseSecurityUrl,
+            uri: controller + "/" + firstRecord + "/" + amount,
+            method: "GET"
+        }, options).then(result => {
+
+            if (result.Code == 201 || result.Code == 200) {
+
+                return returnValue.resolve(result.ResponseObject).promise();
+            }
+            else if (result.Code == 204) { //successful but not results
+                return returnValue.resolve([]).promise();
+            }
+            else {
+                return returnValue.reject(result.Code).promise();
+
+            }
+        });
+
+        //return returnValue.promise();
+    },
+
+    GetFilteredList: function (controller, filterField, filterValue, firstRecord, amount) {
+
+        var returnValue = $.Deferred();
+
+        if (!amount && amount != 0) {
+
+            amount = 100;
+
+            if (!firstRecord && firstRecord != 0) {
+
+                firstRecord = 1;
+            }
+        }
+
+        return encite.doAjax({
+            base: baseSecurityUrl,
+            uri: controller + "/" + filterField + "/" + filterValue + "/" + firstRecord + "/" + amount,
+            method: "GET"
+        }, options).then(result => {
+
+            if (result.Code == 201 || result.Code == 200) {
+
+                return returnValue.resolve(result.ResponseObject).promise();
+            }
+            else if (result.Code == 204) { //successful but not results
+                return returnValue.resolve([]).promise();
+            }
+            else {
+                return returnValue.reject(result.Code).promise();
+
+            }
+        });
+
+    },
+
+    GetSingle: function (controller, id) {
+
+        var returnValue = $.Deferred();
+
+        return encite.doAjax({
+            base: baseSecurityUrl,
+            uri: controller + "/" + id,
+            method: "GET"
+        }, options).then(result => {
+
+            if (result.Code == 201 || result.Code == 200) {
+
+                return returnValue.resolve(result.ResponseObject).promise();
+            }
+            else if (result.Code == 204) { //successful but not results
+                return returnValue.resolve({}).promise();
+            }
+            else {
+                return returnValue.reject(result.Code).promise();
+            }
+        });
+
     }
+
 }
 
 var Spinner = {
@@ -208,3 +327,4 @@ var Spinner = {
         $("#loader-wrapper").hide();
     }
 }
+

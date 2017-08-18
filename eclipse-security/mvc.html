@@ -29,21 +29,23 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="roles.html">Roles</a></li>
-                <li class="nav-item active"><a class="nav-link" href="routes.html">Routes <span class="sr-only">(current)</span></a></li>
+                <li class="nav-item active"><a class="nav-link" href="mvc.html">MVC Routes<span class="sr-only">(current)</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API Endpoints</a></li>
                 <li class="nav-item"><a class="nav-link" href="maps.html">Maps</a></li>
                 <li class="nav-item"><a class="nav-link" href="menu.html">Menu Items</a></li>
-                <li class="nav-item"><a class="nav-link" href="pagesecurity.html">Pages</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </nav>
-    <div class="container-fluid">
 
-        <div class="bg-header">
+    <div class="bg-header">
+        <div class="container">
             <br>
-            <h1>Manage Security Routes</h1>
-            <p>Manage security routes, routes, maps and pages.</p>
+            <h1>Manage MVC Routes</h1>
+            <p>Manage routes for view controllers.</p>
             <p><button type="button" id="btnNew" class="btn btn-primary btn-sm">Create a new route</button></p>
         </div>
+    </div>
+    <div class="container">
         <div class="messages">
             <div id="msgSuccess" class="text-center alert alert-success collapse">The database has been successfully updated.</div>
             <div id="msgError" class="text-center alert alert-danger collapse">Error updating database.</div>
@@ -51,24 +53,20 @@
         <table id="maintable" class="table table-striped">
             <thead class="bg-primary text-white">
                 <tr>
+                    <th>Modify</th>
                     <th>ID</th>
-                    <th>Route Type</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Controller</th>
-                    <th>Action</th>
-                    <th>Elements</th>
                 </tr>
             </thead>
             <tfoot class="bg-primary text-white">
                 <tr>
+                    <th>Modify</th>
                     <th>ID</th>
-                    <th>Route Type</th>
                     <th>Name</th>
                     <th>Description</th>
                     <th>Controller</th>
-                    <th>Action</th>
-                    <th>Elements</th>
                 </tr>
             </tfoot>
         </table>
@@ -129,6 +127,24 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalRoles">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title modalInput">Manage Route Maps</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body container">
+                    <div id="elementID" style="display:none"></div>
+                    <div id="mapList">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modalSuccess" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -162,27 +178,22 @@
                 dom: "Bfrtip",
                 processing: true,
                 ajax: {
-                    "url": baseSecurityUrl + "/SecurityRoute/0/0",
+                    "url": baseSecurityUrl + "/SecurityRoute/RouteType/MVC/0/0",
                     dataSrc: "ResponseObject",
                     "cache": true
                 },
                 columns: [
-                    { data: "ID" },
-                    { data: "RouteType" },
-                    { data: "Name" },
-                    { data: "Description" },
-                    { data: "Controller" },
-                    { data: "Action" },
                     {
                         data: null, render: function (data, type, row) {
-                            if (row.RouteType != 'API') {
-                                return '<a data-id="' + row.ID + '" href="pagesecurity.html" role="button" class="btn btn-primary btnSecurity">Page Security</a>'
-                            }
-                            else {
-                                return '<a href="#" class="btn btn-secondary" role="button" disabled>API Only</a>';
-                            }
+                            return '<button data-id="' + row.ID + '" class="btn btn-primary btnEdit" >Edit</button>&nbsp;' +
+                                    '<button data-id="' + row.ID + '" data-name="' + row.Name + '" class="btn btn-primary btnMap" >Map</button>&nbsp;' +
+                                    '<a data-id="' + row.ID + '" href="pagesecurity.html" role="button" class="btn btn-primary btnSecurity">Security</a>';
                         }
-                    }
+                    },
+                    { data: "ID" },
+                    { data: "Name" },
+                    { data: "Description" },
+                    { data: "Controller" }
                 ]
             });
 
@@ -199,10 +210,10 @@
                 $("#txtEnabled").val('True');
             });
 
-            $("#maintable tbody").on("click", "tr", function () {
+            $("#maintable tbody").on("click", ".btnEdit", function () {
                 $("#modalEdit").show();
 
-                var currentRecordID = $(this).closest('tr').children()[0].textContent;
+                var currentRecordID = $(this).data('id');
                 var recordRequest = baseSecurityUrl + "/SecurityRoute/" + currentRecordID;
 
                 $.get(recordRequest, function (data) {
@@ -218,6 +229,98 @@
                     $("#txtHelpSearchTags").val(data.ResponseObject.HelpSearchTags);
                     $("#txtEnabled").val(data.ResponseObject.Enabled);
                 });
+
+            });
+
+            $("body").on("click", ".btnMap", function (e) {
+
+                var elementID = $(this).data('id');
+                var elementName = $(this).data('name');
+
+                $('#elementID').text(elementID);
+
+                $('#mapList').empty();
+
+                //get all available roles and create buttons for each one
+                var requestRoles = encite.GetList("SecurityRole");
+
+                var requestMappedRoles = encite.GetFilteredList("SecurityMapEditor", "SecurityRouteID", elementID, 0, 0);
+
+                //when the buttons finish building and the request for this route's mappings come back, set the classes according to which belong to the route
+                $.when(requestRoles, requestMappedRoles)
+                .then(function (AllRoles, MappedRoles) {
+
+                    //go through every available role
+                    $.each(AllRoles, function (index, currentRole) {
+
+                        //find each role in the ones mapped to this route
+                        var i = MappedRoles.length;
+                        var activeMapping = 0;
+                        while (i--) {
+
+                            if (MappedRoles[i].SecurityRoleID == currentRole.ID) {
+
+                                activeMapping = true;
+                                MappedRoles.splice(i, 1); //remove the match
+                                break;
+                            }
+                        }
+
+                        if (activeMapping) {
+                            $('#mapList').append('<button id="btn' + currentRole.ID + '" data-mappingid="' + activeMapping + '" data-roleid="' + currentRole.ID + '" class="float-left col-5 mr-2 mb-2 btn btn-success btnRole">' + currentRole.Name + '</button>');
+                        }
+                        else {
+                            $('#mapList').append('<button id="btn' + currentRole.ID + '" data-mappingid="0" data-roleid="' + currentRole.ID + '" class="float-left col-5 mr-2 mb-2 btn btn-danger btnRole">' + currentRole.Name + '</button>');
+                        }
+                    });
+
+                    $(".btnRole").on("click", function (e) {
+
+                        e.preventDefault();
+
+                        var currentButton = this;
+                        var mappingID = $(currentButton).data('mappingid');
+
+                        if (mappingID) {
+                            $.ajax({
+                                method: "DELETE",
+                                url: baseSecurityUrl + "/SecurityMap/" + mappingID,
+                            }).done(function () {
+                                $(currentButton).removeClass('btn-success');
+                                $(currentButton).addClass('btn-danger');
+                                $(currentButton).data('mappingid', 0);
+                                //show success toaster
+                            }).fail(function () {
+                                //show toaster
+                            });
+                        }
+                        else {
+
+                            var roleID = $(currentButton).data('roleid');
+                            var roleName = $(currentButton).text;
+
+                            var targetRole =
+                            encite.Post("SecurityMap", {
+                                ID: 0,
+                                SecurityRouteID: elementID,
+                                SecurityRoute: elementName,
+                                SecurityRoleID: roleID,
+                                SecurityRole: roleName,
+                            }).done(function (createdMap) {
+                                $(currentButton).removeClass('btn-danger');
+                                $(currentButton).addClass('btn-success');
+                                $(currentButton).data('mappingid', createdMap.ID);
+                                //show success toaster
+                            }).fail(function () {
+                                //show toaster
+                            });
+                        }
+                    });
+
+                    $("#modalRoles").modal('show');
+                });
+
+
 
             });
 

@@ -18,3 +18,9 @@ input,select,button {
     background-color: #013865;
     border-color: #013865;
 }
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #808080;
+  color: white;
+  cursor: pointer;
+}

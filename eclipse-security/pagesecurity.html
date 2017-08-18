@@ -29,10 +29,10 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="roles.html">Roles</a></li>
-                <li class="nav-item"><a class="nav-link" href="routes.html">Routes</a></li>
+                <li class="nav-item"><a class="nav-link" href="mvc.html">MVC Routes</a></li>
+                <li class="nav-item"><a class="nav-link" href="api.html">API Endpoints</a></li>
                 <li class="nav-item"><a class="nav-link" href="maps.html">Maps</a></li>
                 <li class="nav-item"><a class="nav-link" href="menu.html">Menu Items</a></li>
-                <li class="nav-item active"><a class="nav-link" href="pagesecurity.html">Pages <span class="sr-only">(current)</span></a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </nav>
@@ -80,23 +80,26 @@
                     </button>
                 </div>
                 <div class="modal-body container">
-                    <div class="input-group">
-                        <label for="Definition" style="width:100px;">Element ID</label>
-                        <input type="text" name="Definition" id="txtElementDefinition" class="form-control" placeholder="Element Definition">
+                    <div class="form-group row">
+                        <label for="Definition" class="col-2 col-form-label">Element ID</label>
+                        <div class="col-10">
+                            <input type="text" name="Definition" id="txtElementDefinition" class="form-control" placeholder="Element Definition">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="Class" style="width:100px;">Class Modifiers</label>
-                        <input type="text" name="Class" id="txtElementClass" class="form-control" placeholder="Element Class">
+                    <div class="form-group row">
+                        <label for="Class" class="col-2 col-form-label">Class Modifiers</label>
+                        <div class="col-10">
+                            <input type="text" name="Class" id="txtElementClass" class="form-control" placeholder="Element Class">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-btn">
-                            <button class="btn btn-secondary" id="btnUpdateName" type="button">Update</button>
-                        </span>
+                    <div class="form-group text-center">
+                        <button class="btn btn-secondary" id="btnUpdateName" type="button">Update</button>
                     </div>
+                </div>
+                <div class="modal-body container">
                     <div id="elementID" style="display:none"></div>
                     <div id="roleList">
                     </div>
-
                 </div>
             </div>
         </div>
